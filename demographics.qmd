@@ -1,0 +1,126 @@
+---
+title: "ADSL Demographic Dashboard"
+format: dashboard
+---
+```{r setup}
+
+#| title: Load Libraries & Data
+#| echo: false
+#| message: false
+#| warning: false
+
+
+# This block ensures packages are installed on the 
+# GitHub Action server and loaded into the session.
+list_of_packages <- c("pharmaverseadam", "plotly", "dplyr", "gt")
+new_packages <- list_of_packages[!(list_of_packages %in% installed.packages()[,"Package"])]
+if(length(new_packages) > 0) {
+  install.packages(new_packages)
+}
+
+library(pharmaverseadam)
+library(dplyr)
+library(plotly)
+library(gt)
+
+# Load the ADSL data
+data("adsl")
+
+#install.packages(c("pharmaverseadam", "plotly", "dplyr", "gt"))
+library(pharmaverseadam)
+library(plotly)
+library(dplyr)
+library(gt)
+
+```
+
+## Row 1
+
+::: {.valuebox  color='primary' icon="person-add"}
+Number of Patients enrolled
+
+`{r} length(adsl$USUBJID)`
+:::
+::: {.valuebox color='success' icon="person-check"}
+
+Safety population size
+
+`{r} nrow(adsl %>% filter(SAFFL == "Y"))`
+
+:::
+::: {.valuebox color="warning" icon="person-fill-x" }   
+Screen failures
+
+`{r} nrow(adsl %>% filter(SAFFL != "Y"))`
+:::
+
+## Row 1
+
+### Column {width="70%"}
+
+```{r age distribution}
+#| title: Age Distribution
+#| echo: false
+
+# Create an interactive histogram with Plotly
+plot_ly(
+  data = adsl,
+  x = ~AGE,
+  type = "histogram",
+  nbinsx = 30,
+  marker = list(color = "#007A9E", line = list(color = "white", width = 1))
+) %>%
+  layout(
+    title = "Age Distribution of Patients",
+    xaxis = list(title = "Age (Years)"),
+    yaxis = list(title = "Frequency (N)"),
+    bargap = 0.1
+  )
+```
+## Row 2
+### Column {width="50%"}
+```{r gender distribution}
+#| title: Sex by Treatment Arm
+#| echo: false
+
+# Summarize data
+sex_by_arm <- adsl %>%
+  group_by(TRT01A, SEX) %>%
+  summarise(N = n(), .groups = 'drop')
+
+# Create an interactive stacked bar chart
+plot_ly(
+  data = sex_by_arm,
+  x = ~TRT01A,
+  y = ~N,
+  color = ~SEX,
+  type = "bar"
+) %>%
+  layout(
+    title = "Sex by Treatment Arm",
+    xaxis = list(title = "Treatment Arm"),
+    yaxis = list(title = "Number of Patients"),
+    barmode = "stack"
+  )
+```
+
+### Column {width="50%"}
+
+```{r}
+#| title: Race by Treatment Arm
+#| echo: false
+
+# Create a summary table
+subject_count_table <- adsl %>%
+  group_by(TRT01A) %>%
+  summarise(N = n(), .groups = 'drop') %>%
+  gt() %>%
+  tab_header(
+    title = "Subject Count by Treatment Arm"
+  )
+
+# Render the table as static HTML
+subject_count_table %>% as_raw_html()
+```
+
+

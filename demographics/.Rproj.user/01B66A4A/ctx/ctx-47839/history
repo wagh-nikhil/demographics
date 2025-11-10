@@ -1,0 +1,56 @@
+install.packages(c("pharmaverseadam", "plotly", "dplyr", "gt"))
+#| title: Load Libraries & Data
+#| echo: false
+#| message: false
+#| warning: false
+# This block ensures packages are installed on the
+# GitHub Action server and loaded into the session.
+list_of_packages <- c("pharmaverseadam", "plotly", "dplyr", "gt")
+new_packages <- list_of_packages[!(list_of_packages %in% installed.packages()[,"Package"])]
+if(length(new_packages) > 0) {
+install.packages(new_packages)
+}
+library(pharmaverseadam)
+library(dplyr)
+library(plotly)
+library(gt)
+# Load the ADSL data
+data("adsl")
+#install.packages(c("pharmaverseadam", "plotly", "dplyr", "gt"))
+library(pharmaverseadam)
+library(plotly)
+library(dplyr)
+library(gt)
+#| title: Total Patients (N)
+#| echo: false
+# This is a "Value Box"
+length(adsl$USUBJID)
+#| title: Age Distribution
+#| echo: false
+# Create an interactive histogram with Plotly
+plot_ly(
+data = adsl,
+x = ~AGE,
+type = "histogram",
+nbinsx = 30,
+marker = list(color = "#007A9E", line = list(color = "white", width = 1))
+) %>%
+layout(
+title = "Age Distribution of Patients",
+xaxis = list(title = "Age (Years)"),
+yaxis = list(title = "Frequency (N)"),
+bargap = 0.1
+)
+#| title: Race by Treatment Arm
+#| echo: false
+# Create a summary table
+race_by_arm_table <- adsl %>%
+group_by(TRT01A) %>%
+summarise(N = n(), .groups = 'drop') %>%
+gt(groupname_col = "TRT01A") %>%
+tab_header(
+title = "Race by Treatment Arm"
+)
+# Render the table as static HTML
+race_by_arm_table %>% as_raw_html()
+install.packages("DT")
