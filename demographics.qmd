@@ -1,7 +1,8 @@
 ---
-title: "ADSL Demographic Dashboard"
+title: "Dashboard"
 format: dashboard
 ---
+
 ```{r setup}
 
 #| title: Load Libraries & Data
@@ -34,7 +35,13 @@ library(gt)
 
 ```
 
-## Row 1
+## {.sidebar}
+
+### About this Dashboard
+This dashboard provides an overview of the demographic characteristics of patients enrolled in the clinical trial. It includes key metrics such as the number of patients enrolled, safety population size, and screen failures, along with visualizations of age distribution, sex by treatment arm, and race by treatment arm.
+
+# Demographics Overview
+## column 1 
 
 ::: {.valuebox  color='primary' icon="person-add"}
 Number of Patients enrolled
@@ -56,7 +63,7 @@ Screen failures
 
 ## Row 1
 
-### Column {width="70%"}
+### Column 
 
 ```{r age distribution}
 #| title: Age Distribution
